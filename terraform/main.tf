@@ -42,32 +42,6 @@ resource "aws_security_group" "ansible_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # HTTP access (for .NET app if needed)
-  ingress {
-    description = "HTTP"
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # HTTPS access
-  ingress {
-    description = "HTTPS"
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # Outbound access
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   tags = {
     Name = "${var.project_name}-sg"
   }
@@ -136,19 +110,6 @@ resource "null_resource" "ansible_provisioning" {
       "$HOME/.local/bin/ansible-playbook -i 'localhost,' -c local playbook.yml"
     ]
   }
-}
-
-# Output important information
-output "instance_public_ip" {
-  value = aws_instance.ansible_host.public_ip
-}
-
-output "instance_id" {
-  value = aws_instance.ansible_host.id
-}
-
-output "ssh_command" {
-  value = "ssh -i private_key.pem ubuntu@${aws_instance.ansible_host.public_ip}"
 }
 
 # Save private key to file (for manual SSH access)

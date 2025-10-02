@@ -54,3 +54,22 @@ terraform/
     ├── versions.tf
     ├── providers.tf
     └── variables.tf
+
+# 2
+clone the repository
+cd terraform
+
+# initilize terraform
+terraform init
+
+# Review the plan if necessary
+terraform plan
+
+# Apply the configuration
+terraform apply -auto-approve
+
+# To access the instance
+ssh -i ~/.ssh/id_rsa ansible_user@<public_ip>
+
+# To destroy the infra
+terraform destroy
