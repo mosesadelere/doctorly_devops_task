@@ -1,0 +1,23 @@
+---
+
+# App config
+app_name: "task-dotnet-app"
+app_version: "1.0.0"
+app_port: 8080
+app_image: "task-dotnet-app:latest"
+
+# DB config
+db_type: "postgresql"
+db_name: "hiDoctor"
+db_user: "dbuser1"
+db_password: "{{ vault_db_password }}"
+db_root_password: "{{ vault_db_root_password }}"
+db_port: 5432
+
+# Docker config
+docker_compose_version: "v2.24.1"
+deploy_dir: "/opt/{{ app_name }}"
+app_src_dir: "{{ deploy_dir }}/src"
+
+# Network config
+network_name: "app-network"

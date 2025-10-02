@@ -1,0 +1,9 @@
+---
+- name: Deploy .NET stack locally
+  hosts: local
+  become: yes
+  vars:
+    build_locally: true  # Build image on localhost
+  roles:
+    - docker_setup
+    - dotnet_stack
