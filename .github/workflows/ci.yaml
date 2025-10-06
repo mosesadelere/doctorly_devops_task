@@ -10,18 +10,20 @@ on:
 jobs:
   build_and_push:
     runs-on:  ubuntu-latest
+    outputs:
+      tag: ${{ steps.set_sha.outputs.SHORT_SHA }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
 
       - name: Set Short SHA
         run:  |
-          echo "SHORT_SHA=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_ENV
+          echo "SHORT_SHA=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_OUTPUT
 
       - name: Build Docker image
         run:  |
-          docker build -t mosesade/complete-devops:${{ env.SHORT_SHA }} .
-          
+          docker build -t mosesade/complete-devops:${{ steps.set_sha.outputs.SHORT_SHA }} .
+
       - name: Login to Dockerhub
         run:  |
           echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
@@ -29,7 +31,7 @@ jobs:
       - name: Security scan for Image
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: mosesade/complete-devops:${{ env.SHORT_SHA }}
+          image-ref: mosesade/complete-devops:${{ steps.set_sha.outputs.SHORT_SHA }}
           format: 'table'
           exit-code: '0'
           ignore-unfixed: true
@@ -38,4 +40,23 @@ jobs:
 
       - name: Push to Dockerhub
         run:  |
-          docker push mosesade/complete-devops:${{ env.SHORT_SHA }}
+          docker push mosesade/complete-devops:${{ steps.set_sha.outputs.SHORT_SHA }}
+
+  test:
+    needs: build_and_push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Login to Dockerhub
+        run:  |
+          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      - name: Pull Image & Test Container
+        env:
+          TAG: ${{ needs.build_and_push.outputs.tag }}
+        run: |
+          echo "Pulling built image"
+          docker pull mosesade/complete-devops:$TAG
+          docker run --rm mosesade/complete-devops:$TAG python -m pytest tests/ -v

@@ -4,7 +4,11 @@ WORKDIR /app
 
 COPY    app.py .
 
+COPY tests .
+
 RUN pip install flask
+
+RUN pip install pytest
 
 EXPOSE  8080
 
