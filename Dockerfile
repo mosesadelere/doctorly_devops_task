@@ -2,9 +2,7 @@ FROM python:3.9-slim
 
 WORKDIR /app
 
-COPY    app.py .
-
-COPY tests /app/
+COPY    . .
 
 RUN pip install flask
 
