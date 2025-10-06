@@ -58,6 +58,7 @@ jobs:
         env:
           TAG: ${{ needs.build_and_push.outputs.tag }}
         run: |
+          ls -lart
           echo "Pulling built image"
           docker pull mosesade/complete-devops:$TAG
           docker run --rm mosesade/complete-devops:$TAG python -m pytest tests/ -v
