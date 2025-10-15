@@ -37,3 +37,9 @@ variable "subnet_id" {
   description = "Subnet ID"
   type        = string
 }
+
+variable "key_name" {
+  description = "SSH key pair name"
+  type        = string
+  default     = ""
+}
